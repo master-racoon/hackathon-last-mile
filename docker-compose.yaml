@@ -68,3 +68,17 @@ services:
       - backend
     ports:
       - 3000:3000
+
+  ml-training:
+    profiles:
+      - train
+    build:
+      context: ./ml-training
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/data
+      - ./models:/models
+      - ./ml-training:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    stop_signal: SIGKILL

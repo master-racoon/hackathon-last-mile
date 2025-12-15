@@ -1,16 +1,57 @@
-# Full-Stack Starter Template# LastMile
+# LastMile
 
-A clean, production-ready full-stack application template with:This repository contains the backend and frontend for LastMile.
+This repository contains the backend, frontend, and ML training pipeline for LastMile.
 
-- **Backend**: ASP.NET Core 9.0 with PostgreSQL, Entity Framework Core, and ASP.NET IdentityWe are tracking tasks in [Linear](https://linear.app/LastMile/team/SEC/active).
+We are tracking tasks in [Linear](https://linear.app/LastMile/team/SEC/active).
 
-- **Frontend**: React 18 with TypeScript, Vite, TailwindCSS, and Tanstack Query
+## Services
 
-- **DevOps**: Docker Compose for easy local development## Get started
+- **Backend**: FastAPI service (Python)
+- **Frontend**: React 18 with TypeScript, Vite, TailwindCSS
+- **Database**: PostgreSQL
+- **ML Training**: CatBoost model training service
 
-## FeaturesEach project can be run individually. It's quicker to get the full stack running with [Docker](https://www.docker.com/products/docker-desktop/): `docker compose up`.
+## Get Started
 
-### BackendOnce projects are running you can find them at:
+### Running the Application Stack
+
+Start all services with Docker:
+
+```bash
+docker-compose up
+```
+
+Once projects are running you can find them at:
+
+- Database (PostgreSQL): `localhost:5433`, Username: `postgres`, Password: `Password123!`, Database: `default`
+- [Backend API](http://localhost:8000) - FastAPI service
+- [Backend API Docs](http://localhost:8000/docs) - Swagger UI
+- [Backend OpenAPI Spec](http://localhost:8000/api.json) - OpenAPI JSON
+- [Frontend](http://localhost:3000)
+
+### Training the ML Model
+
+To train the CatBoost model for shipping delay prediction:
+
+1. Place your training data at `./data/south_africa_all_with_weather_clean.csv`
+2. Run the training service:
+
+```bash
+# Using the helper script
+./train-model.sh
+
+# Or directly with docker-compose
+docker-compose --profile train up ml-training
+```
+
+The trained model will be saved to:
+
+- `./models/catboost_model.json` - Trained model in JSON format
+- `./models/model_metadata.json` - Model metrics and metadata
+
+See `./ml-training/README.md` and `./data/README.md` for more details.
+
+## FeaturesOnce projects are running you can find them at:
 
 - ✅ ASP.NET Core 9.0 Web API
 

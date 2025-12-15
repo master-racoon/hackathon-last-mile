@@ -1,0 +1,8 @@
+# Models Directory
+
+Trained models will be saved here.
+
+Output files:
+
+- `catboost_model.json` - Trained CatBoost model
+- `model_metadata.json` - Model performance metrics and metadata

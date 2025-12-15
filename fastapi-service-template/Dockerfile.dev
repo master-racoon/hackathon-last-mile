@@ -1,5 +1,6 @@
 # Base image
-FROM --platform=linux/arm64/v8 arm64v8/python:3.10-bullseye as build
+ARG TARGETPLATFORM=linux/arm64/v8
+FROM --platform=$TARGETPLATFORM arm64v8/python:3.10-bullseye as build
 
 RUN apt-get update && apt-get install -y build-essential curl
 ENV VIRTUAL_ENV=/opt/venv \
@@ -12,9 +13,9 @@ WORKDIR /usr/src
 RUN uv venv /opt/venv && \
     uv pip install --no-cache -r requirements.txt
 
-
 # App image
-FROM --platform=linux/arm64/v8 arm64v8/python:3.10-bullseye
+ARG TARGETPLATFORM=linux/arm64/v8
+FROM arm64v8/python:3.10-bullseye
 COPY --from=build /opt/venv /opt/venv
 
 # Activate the virtualenv in the container
