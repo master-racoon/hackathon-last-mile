@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+
+  :root {
+
+    /* not in use */
+    --background: 240, 4.3%, 13%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+
+
+    --bordercolor: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 20.4%;
+    --ring: 222.2 84% 4.9%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    /* in use */
+    --background: 0, 0%, 0%, 0.94;
+    --foreground: 210 40% 98%;
+    --gradient: linear-gradient(90deg, hsl(var(--foreground)) 0%, hsl(var(--foreground)) 50%, hsla(var(--foreground), 0) 100%);
+ 
+
+    color-scheme: dark; /* sets the color scheme to a default dark which applies to autofill for all browsers even if the hack below is not working*/
+
+    --card: 240, 4.3%, 80.5%;
+    --card-foreground: 210 40% 98%;
+    --card-background: hsla(240, 4%, 14%, 0.64);
+    --card-background-closed: hsla(45, 45%, 19%, 0.64);
+    --card-background-open: hsla(101, 46%, 21%, 0.64);
+    --card-background-purple: hsla(268, 45%, 19%, 0.64);
+
+    
+    --primary: 145, 82%, 68%, 1;
+    --primary-background: 145, 47%, 26%, 1;
+    --primary-foreground: 145, 82%, 68%, 1;
+
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --bordercolor: 240, 4.3%, 20.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    /* not in use */
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+  }
+}
+
+input:-webkit-autofill {       transition: all 0s 50000s;     }  /* hack to fix autofill color in chrome */
+ 
+@layer base {
+  * {
+    @apply border-bordercolor;
+  }
+  body {
+   
+
+    font-family: -apple-system, Helvetica, system-ui, sans-serif;
+    @apply bg-gray text-foreground dark;
+  }
+
+  .faded-text {
+    @apply 
+  }
+
+  h1 {
+    @apply text-white text-xl font-bold my-4;
+  }
+
+  h2 {
+    @apply text-white text-xl font-bold  my-4;
+  }
+
+  h3 {
+    @apply text-white text-xl font-bold  my-4;
+  }
+}
+
+

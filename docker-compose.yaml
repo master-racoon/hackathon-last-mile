@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  database:
+    image: postgres:latest
+    stop_signal: SIGKILL
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Password123!
+      - POSTGRES_DB=default
+    ports:
+      - "5433:5432" # Note: PostgreSQL default port is 5432. Mapped to 5433 on the host to avoid conflicts.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    stop_signal: SIGKILL
+    volumes:
+      - ./backend:/app
+      - /app/LastMile/bin
+      - /app/LastMile/obj
+      - /app/LastMile.Common/bin
+      - /app/LastMile.Common/obj
+      - $HOME/.microsoft/usersecrets/2d27a32f-6f16-4d3b-83c9-f0bf13ef206e:/root/.microsoft/usersecrets/2d27a32f-6f16-4d3b-83c9-f0bf13ef206e
+    working_dir: /app/LastMile
+    command: dotnet watch run --urls http://+:5000 --no-hot-reload
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Server=database;Database=default;Port=5432;User Id=postgres;Password=Password123!;SSL Mode=Prefer;Trust Server Certificate=true
+    depends_on:
+      - database
+    ports:
+      - 5000:5000
+
+  frontend:
+    image: node:20.18.0-slim
+    volumes:
+      - ./:/app
+      - /app/frontend/node_modules
+    working_dir: /app/frontend
+    command: sh -c "npm install && npm run dev"
+    stop_signal: SIGKILL
+    environment:
+      - VITE_BASE_API_URL=/backend
+      - VITE_PROXY_ENABLED=true
+      - VITE_PROXY_TARGET=http://backend:5000
+    ports:
+      - 3000:3000

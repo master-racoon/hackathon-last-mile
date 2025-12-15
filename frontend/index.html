@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LastMile</title>
+  <meta name="description" content="A Secondary Trading Platform" />
+  <meta name="author" content="uBIT AB" />
+  <meta property="og:image" content="/og-image.svg" />
+  <meta name="robots" content="%VITE_ROBOTS%" />
+
+  <!-- Raygun Crash Reporting -->
+  <script type="text/javascript">
+    !function (a, b, c, d, e, f, g, h) {
+      a.RaygunObject = e, a[e] = a[e] || function () {
+        (a[e].o = a[e].o || []).push(arguments)
+      }, f = b.createElement(c), g = b.getElementsByTagName(c)[0],
+        f.async = 1, f.src = d, g.parentNode.insertBefore(f, g), h = a.onerror, a.onerror = function (b, c, d, f, g) {
+          h && h(b, c, d, f, g), g || (g = new Error(b)), a[e].q = a[e].q || [], a[e].q.push({
+            e: g
+          })
+        }
+    }(window, document, "script", "//cdn.raygun.io/raygun4js/raygun.min.js", "rg4js");
+  </script>
+  <script type="text/javascript">
+    rg4js('apiKey', 'BpzeJDL1Kzqhxb3ILDBdw');
+    rg4js('enableCrashReporting', true);
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', '%VITE_GTAG_ID%');</script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "LastMile API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/sample": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "summary": "Get a hello world message",
+        "operationId": "SampleGetHello",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": { }
+}

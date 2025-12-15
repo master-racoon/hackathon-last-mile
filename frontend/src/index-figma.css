@@ -1,0 +1,95 @@
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .all-\[unset\] {
+    all: unset;
+  }
+}
+
+:root {
+  --backgroundsbase: hsl(40, 9.7%, 93.9%);
+  --backgroundsdark: hsl(30, 2.7%, 85.5%);
+  --backgroundswhite: hsl(0, 0%, 100%);
+  --brandbrandpurpleaccentsaccentsbase: hsl(281.3, 78%, 83.9%);
+  --brandbrandpurpleaccentsaccentsdark: hsl(276.3, 71.7%, 76.5%);
+  --brandbrandpurpleaccentsaccentsdarkest: hsl(275.7, 66.3%, 37.3%);
+  --brandbrandpurpleaccentsaccentslight: hsl(275.1, 81.5%, 87.3%);
+  --brandbrandpurpleaccentsaccentslighter: hsl(274.7, 100%, 92.5%);
+  --brandwhite: hsl(240, 11.1%, 96.5%);
+  --browser-uidark-bg: hsla(0, 0%, 23.9%, 0.9);
+  --browser-uilight-bg: hsla(0, 0%, 97.6%, 0.9);
+  --buttondark: hsl(240, 4.3%, 13.5%);
+  --buttonpink: hsl(145.3, 47.8%, 26.3%);
+  --buttontextdark: hsl(0, 0%, 0%);
+  --buttontextgrey: hsl(0, 0%, 50.6%);
+  --buttontextlight: hsl(0, 0%, 100%);
+  --buttontextpink: hsl(145.1, 82.9%, 67.8%);
+  --buttonwhite: hsl(0, 0%, 100%);
+  --companycard-effect: 0px 16px 32px -8px hsla(240, 4%, 4.9%, 0.6);
+  --dropshadow: 0px 16px 32px -8px hsla(240, 4%, 4.9%, 0.6);
+  --fillcard: hsl(240, 5.1%, 11.6%);
+  --fillinput: hsla(0, 0%, 0%, 0.1);
+  --glass: 0px 4px 16px 0px hsla(0, 0%, 0%, 0.1);
+  --large-tight-medium-font-family: "Inter", Helvetica;
+  --large-tight-medium-font-size: 18px;
+  --large-tight-medium-font-style: normal;
+  --large-tight-medium-font-weight: 500;
+  --large-tight-medium-letter-spacing: 0px;
+  --large-tight-medium-line-height: 20px;
+  --primarybrand: hsl(145.3, 81.8%, 67.6%);
+  --primarybrandsecondary: hsl(145.3, 47.8%, 26.3%);
+  --primarydarkish: hsl(240, 2.9%, 20.2%);
+  --primarydark: hsl(240, 4.3%, 13.5%);
+  --primarydarker: hsl(240, 4.3%, 9%);
+  --primarydarkest: hsl(0, 0%, 0%);
+  --primarylight: hsl(0, 0%, 50.6%);
+  --regular-none-medium-font-family: "Inter", Helvetica;
+  --regular-none-medium-font-size: 16px;
+  --regular-none-medium-font-style: normal;
+  --regular-none-medium-font-weight: 500;
+  --regular-none-medium-letter-spacing: 0px;
+  --regular-none-medium-line-height: 16px;
+  --regular-tight-medium-font-family: "Inter", Helvetica;
+  --regular-tight-medium-font-size: 16px;
+  --regular-tight-medium-font-style: normal;
+  --regular-tight-medium-font-weight: 500;
+  --regular-tight-medium-letter-spacing: 0px;
+  --regular-tight-medium-line-height: 20px;
+  --regular-tight-regular-font-family: "Inter", Helvetica;
+  --regular-tight-regular-font-size: 16px;
+  --regular-tight-regular-font-style: normal;
+  --regular-tight-regular-font-weight: 400;
+  --regular-tight-regular-letter-spacing: 0px;
+  --regular-tight-regular-line-height: 20px;
+  --sheet-dropshadow: 1px 0px 32px -8px hsla(240, 4%, 4.9%, 0.6);
+  --small-normal-medium-font-family: "Inter", Helvetica;
+  --small-normal-medium-font-size: 14px;
+  --small-normal-medium-font-style: normal;
+  --small-normal-medium-font-weight: 500;
+  --small-normal-medium-letter-spacing: 0px;
+  --small-normal-medium-line-height: 20px;
+  --small-tight-regular-font-family: "Inter", Helvetica;
+  --small-tight-regular-font-size: 14px;
+  --small-tight-regular-font-style: normal;
+  --small-tight-regular-font-weight: 400;
+  --small-tight-regular-letter-spacing: 0px;
+  --small-tight-regular-line-height: 20px;
+  --strokecard: hsla(0, 0%, 50.6%, 0.2);
+  --strokelight: hsla(0, 0%, 50.6%, 0.1);
+  --strokelighter: hsla(0, 0%, 50.6%, 0.4);
+  --strokelightest: hsla(0, 0%, 100%, 0.9);
+  --systemgreenlight: hsl(136.3, 61.3%, 56.5%);
+  --textbase: hsl(200, 4.5%, 26.3%);
+  --textchat-light: hsl(0, 0%, 90.2%);
+  --textdark: hsl(205.7, 6.8%, 20.2%);
+  --textdarker: hsl(204, 7.2%, 13.5%);
+  --textdarkest: hsl(0, 0%, 3.1%);
+  --textgrey: hsl(0, 0%, 50.6%);
+  --textgrey-light: hsl(0, 0.5%, 61.8%);
+  --textlight: hsl(200, 2.7%, 43.5%);
+  --textlighter: hsl(202.5, 3.4%, 46.3%);
+  --textlightest: hsl(210, 4.8%, 67.1%);
+  --textwhite: hsl(0, 0%, 100%);
+  --variable-collection-darker: hsl(240, 4.3%, 9%);
+}
