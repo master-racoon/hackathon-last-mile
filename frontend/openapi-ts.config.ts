@@ -1,7 +1,7 @@
 import { defineConfig } from "@hey-api/openapi-ts";
 
 export default defineConfig({
-  input: "../backend/api.json",
+  input: "../fastapi-service-template/app/api.json",
   output: "src/generated-api",
   plugins: [
     "@hey-api/client-fetch",

@@ -1,0 +1,10 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.log
+.env
+.env.*.local
+.venv
+venv/

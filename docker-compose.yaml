@@ -15,26 +15,42 @@ services:
       timeout: 5s
       retries: 5
 
+  # .NET backend (disabled - using FastAPI as primary backend)
+  # backend:
+  #   image: mcr.microsoft.com/dotnet/sdk:9.0
+  #   stop_signal: SIGKILL
+  #   volumes:
+  #     - ./backend:/app
+  #     - /app/LastMile/bin
+  #     - /app/LastMile/obj
+  #     - /app/LastMile.Common/bin
+  #     - /app/LastMile.Common/obj
+  #     - $HOME/.microsoft/usersecrets/2d27a32f-6f16-4d3b-83c9-f0bf13ef206e:/root/.microsoft/usersecrets/2d27a32f-6f16-4d3b-83c9-f0bf13ef206e
+  #   working_dir: /app/LastMile
+  #   command: dotnet watch run --urls http://+:5000 --no-hot-reload
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:5000
+  #     - ConnectionStrings__DefaultConnection=Server=database;Database=default;Port=5432;User Id=postgres;Password=Password123!;SSL Mode=Prefer;Trust Server Certificate=true
+  #   depends_on:
+  #     - database
+  #   ports:
+  #     - 5000:5000
+
   backend:
-    image: mcr.microsoft.com/dotnet/sdk:9.0
-    stop_signal: SIGKILL
+    build:
+      context: ./fastapi-service-template
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./backend:/app
-      - /app/LastMile/bin
-      - /app/LastMile/obj
-      - /app/LastMile.Common/bin
-      - /app/LastMile.Common/obj
-      - $HOME/.microsoft/usersecrets/2d27a32f-6f16-4d3b-83c9-f0bf13ef206e:/root/.microsoft/usersecrets/2d27a32f-6f16-4d3b-83c9-f0bf13ef206e
-    working_dir: /app/LastMile
-    command: dotnet watch run --urls http://+:5000 --no-hot-reload
+      - ./fastapi-service-template/app:/usr/src/app
+    ports:
+      - "8000:8000"
+      - "5000:8000" # Also expose on port 5000 for compatibility
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Server=database;Database=default;Port=5432;User Id=postgres;Password=Password123!;SSL Mode=Prefer;Trust Server Certificate=true
+      - DATABASE_URL=postgresql://postgres:Password123!@database:5432/default
     depends_on:
       - database
-    ports:
-      - 5000:5000
+    stop_signal: SIGKILL
 
   frontend:
     image: node:20.18.0-slim
@@ -47,6 +63,8 @@ services:
     environment:
       - VITE_BASE_API_URL=/backend
       - VITE_PROXY_ENABLED=true
-      - VITE_PROXY_TARGET=http://backend:5000
+      - VITE_PROXY_TARGET=http://backend:8000
+    depends_on:
+      - backend
     ports:
       - 3000:3000

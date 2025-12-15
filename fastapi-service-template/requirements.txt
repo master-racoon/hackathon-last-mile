@@ -1,0 +1,16 @@
+fastapi
+pydantic
+pydantic-core
+uvicorn
+dataclasses
+typing
+httpcore
+openai
+python-dotenv
+sqlalchemy
+psycopg2
+httpx
+logging
+starlette
+beautifulsoup4
+datetime
