@@ -51,6 +51,31 @@ def seed_vehicle_types(db):
         
         vehicle_types = []
         for _, row in df.iterrows():
+            # Calculate emission factor based on fuel type
+            is_diesel = bool(row['Diesel'] == 'yes') if pd.notna(row['Diesel']) else False
+            is_hybrid = bool(row['Hybrid'] == 'yes') if pd.notna(row['Hybrid']) else False
+            is_ev = bool(row['EV_van'] == 'yes') if pd.notna(row['EV_van']) else False
+            diesel_l_per_km = float(row['Diesel_l_per_km']) if pd.notna(row['Diesel_l_per_km']) else None
+            ev_energy = float(row['EV_energy_kWh_per_km']) if pd.notna(row['EV_energy_kWh_per_km']) and row['EV_energy_kWh_per_km'] != ' ' else None
+            
+            # Calculate emission factor
+            emission_factor = None
+            if is_diesel and diesel_l_per_km:
+                # Diesel: 2.68 kg CO2 per liter
+                emission_factor = diesel_l_per_km * 2.68
+            elif is_ev and ev_energy:
+                # EV: South Africa grid carbon intensity ~0.95 kg CO2/kWh
+                emission_factor = ev_energy * 0.95
+            elif is_hybrid:
+                # Hybrid: average of diesel and EV
+                emission_factor = 0.175
+            elif is_diesel:
+                # Default diesel
+                emission_factor = 0.27
+            elif is_ev:
+                # Default EV
+                emission_factor = 0.08
+            
             vehicle_type = VehicleType(
                 name=str(row['Vehicle']) if pd.notna(row['Vehicle']) else None,
                 max_weight_kg=float(row['Payload_ton']) * 1000 if pd.notna(row['Payload_ton']) else None,
@@ -60,15 +85,16 @@ def seed_vehicle_types(db):
                 length_m=float(row['Length_m']) if pd.notna(row['Length_m']) else None,
                 width_m=float(row['Width_m']) if pd.notna(row['Width_m']) else None,
                 height_m=float(row['Height_m']) if pd.notna(row['Height_m']) else None,
-                diesel=bool(row['Diesel'] == 'yes') if pd.notna(row['Diesel']) else False,
-                hybrid=bool(row['Hybrid'] == 'yes') if pd.notna(row['Hybrid']) else False,
-                ev_van=bool(row['EV_van'] == 'yes') if pd.notna(row['EV_van']) else False,
+                diesel=is_diesel,
+                hybrid=is_hybrid,
+                ev_van=is_ev,
                 ev_charge_time=None,
                 ev_range_km=float(str(row['EV_range_km']).split('–')[0]) if pd.notna(row['EV_range_km']) and row['EV_range_km'] != '—' else None,
-                ev_energy_kwh_per_km=float(row['EV_energy_kWh_per_km']) if pd.notna(row['EV_energy_kWh_per_km']) and row['EV_energy_kWh_per_km'] != ' ' else None,
+                ev_energy_kwh_per_km=ev_energy,
                 average_speed_kmh=None,
                 fuel_consumption_per_100km=None,
-                diesel_l_per_km=float(row['Diesel_l_per_km']) if pd.notna(row['Diesel_l_per_km']) else None,
+                diesel_l_per_km=diesel_l_per_km,
+                emission_factor_kg_per_km=emission_factor,
                 cost_per_km=None,
                 diesel_cost_zar_per_km=float(row['Diesel_cost_ZAR_per_km']) if pd.notna(row['Diesel_cost_ZAR_per_km']) else None,
                 ev_cost_zar_per_km_ac=float(row['EV_cost_ZAR_per_km_AC']) if pd.notna(row['EV_cost_ZAR_per_km_AC']) and row['EV_cost_ZAR_per_km_AC'] != ' ' else None,
@@ -185,7 +211,10 @@ def seed_orders_from_excel(db, excel_path="/data/open_orders.xlsx"):
 def init_db():
     """Initialize database with seed data"""
     
-    # Create tables
+    # Drop and recreate tables
+    logger.info("Dropping existing tables...")
+    Base.metadata.drop_all(bind=engine)
+    logger.info("Creating fresh tables...")
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created")
     

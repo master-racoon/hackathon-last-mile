@@ -900,6 +900,299 @@
         }
       }
     },
+    "/vehicle-emissions/": {
+      "get": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Get All Emissions",
+        "description": "Get all vehicle emissions records",
+        "operationId": "get_all_emissions_vehicle_emissions__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleEmissionsResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Get All Emissions Vehicle Emissions  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Create Emission",
+        "description": "Create a new emission record",
+        "operationId": "create_emission_vehicle_emissions__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleEmissionsCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleEmissionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-emissions/vehicle-type/{vehicle_type_id}": {
+      "get": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Get Emissions By Vehicle Type",
+        "description": "Get all emission records for a specific vehicle type",
+        "operationId": "get_emissions_by_vehicle_type_vehicle_emissions_vehicle_type__vehicle_type_id__get",
+        "parameters": [
+          {
+            "name": "vehicle_type_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vehicle Type Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleEmissionsResponse"
+                  },
+                  "title": "Response Get Emissions By Vehicle Type Vehicle Emissions Vehicle Type  Vehicle Type Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-emissions/vehicle-type/{vehicle_type_id}/temperature/{temperature}": {
+      "get": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Get Emissions By Temperature",
+        "description": "Get emission record for a specific vehicle type at a given temperature",
+        "operationId": "get_emissions_by_temperature_vehicle_emissions_vehicle_type__vehicle_type_id__temperature__temperature__get",
+        "parameters": [
+          {
+            "name": "vehicle_type_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vehicle Type Id"
+            }
+          },
+          {
+            "name": "temperature",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "title": "Temperature"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleEmissionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-emissions/{emission_id}": {
+      "get": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Get Emission",
+        "description": "Get a specific emission record by ID",
+        "operationId": "get_emission_vehicle_emissions__emission_id__get",
+        "parameters": [
+          {
+            "name": "emission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Emission Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleEmissionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Update Emission",
+        "description": "Update an existing emission record",
+        "operationId": "update_emission_vehicle_emissions__emission_id__put",
+        "parameters": [
+          {
+            "name": "emission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Emission Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleEmissionsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleEmissionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "vehicle-emissions"
+        ],
+        "summary": "Delete Emission",
+        "description": "Delete an emission record",
+        "operationId": "delete_emission_vehicle_emissions__emission_id__delete",
+        "parameters": [
+          {
+            "name": "emission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Emission Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Root",
@@ -1740,6 +2033,109 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VehicleEmissionsCreate": {
+        "properties": {
+          "vehicle_type_id": {
+            "type": "integer",
+            "title": "Vehicle Type Id"
+          },
+          "temp_min": {
+            "type": "number",
+            "title": "Temp Min"
+          },
+          "temp_max": {
+            "type": "number",
+            "title": "Temp Max"
+          },
+          "co2_per_km": {
+            "type": "number",
+            "title": "Co2 Per Km"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_type_id",
+          "temp_min",
+          "temp_max",
+          "co2_per_km"
+        ],
+        "title": "VehicleEmissionsCreate",
+        "description": "Schema for creating a new vehicle emissions record"
+      },
+      "VehicleEmissionsResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "vehicle_type_id": {
+            "type": "integer",
+            "title": "Vehicle Type Id"
+          },
+          "temp_min": {
+            "type": "number",
+            "title": "Temp Min"
+          },
+          "temp_max": {
+            "type": "number",
+            "title": "Temp Max"
+          },
+          "co2_per_km": {
+            "type": "number",
+            "title": "Co2 Per Km"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle_type_id",
+          "temp_min",
+          "temp_max",
+          "co2_per_km"
+        ],
+        "title": "VehicleEmissionsResponse",
+        "description": "Schema for vehicle emissions response"
+      },
+      "VehicleEmissionsUpdate": {
+        "properties": {
+          "temp_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temp Min"
+          },
+          "temp_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temp Max"
+          },
+          "co2_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Co2 Per Km"
+          }
+        },
+        "type": "object",
+        "title": "VehicleEmissionsUpdate",
+        "description": "Schema for updating an existing vehicle emissions record"
       },
       "VehicleTypeCreate": {
         "properties": {

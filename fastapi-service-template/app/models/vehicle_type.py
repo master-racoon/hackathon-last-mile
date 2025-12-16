@@ -35,6 +35,7 @@ class VehicleType(Base):
     average_speed_kmh = Column(Float, nullable=True, comment="Average speed in km/h")
     fuel_consumption_per_100km = Column(Float, nullable=True, comment="Fuel consumption per 100km")
     diesel_l_per_km = Column(Float, nullable=True, comment="Diesel consumption in liters per km")
+    emission_factor_kg_per_km = Column(Float, nullable=True, comment="Base CO2 emission factor in kg per km (varies by fuel type)")
     
     # Cost and availability
     cost_per_km = Column(Float, nullable=True, comment="Operating cost per kilometer")

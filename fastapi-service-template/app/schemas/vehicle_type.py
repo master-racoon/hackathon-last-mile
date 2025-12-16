@@ -21,6 +21,7 @@ class VehicleTypeCreate(BaseModel):
     average_speed_kmh: Optional[float] = None
     fuel_consumption_per_100km: Optional[float] = None
     diesel_l_per_km: Optional[float] = None
+    emission_factor_kg_per_km: Optional[float] = None
     cost_per_km: Optional[float] = None
     diesel_cost_zar_per_km: Optional[float] = None
     ev_cost_zar_per_km_ac: Optional[float] = None
@@ -49,6 +50,7 @@ class VehicleTypeUpdate(BaseModel):
     average_speed_kmh: Optional[float] = None
     fuel_consumption_per_100km: Optional[float] = None
     diesel_l_per_km: Optional[float] = None
+    emission_factor_kg_per_km: Optional[float] = None
     cost_per_km: Optional[float] = None
     diesel_cost_zar_per_km: Optional[float] = None
     ev_cost_zar_per_km_ac: Optional[float] = None
@@ -78,6 +80,7 @@ class VehicleTypeResponse(BaseModel):
     average_speed_kmh: Optional[float] = None
     fuel_consumption_per_100km: Optional[float] = None
     diesel_l_per_km: Optional[float] = None
+    emission_factor_kg_per_km: Optional[float] = None
     cost_per_km: Optional[float] = None
     diesel_cost_zar_per_km: Optional[float] = None
     ev_cost_zar_per_km_ac: Optional[float] = None
