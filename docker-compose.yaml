@@ -43,6 +43,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./fastapi-service-template/app:/usr/src/app
+      - ./models:/models
     ports:
       - "8000:8000"
       - "5000:8000" # Also expose on port 5000 for compatibility

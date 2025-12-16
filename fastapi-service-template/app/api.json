@@ -356,6 +356,47 @@
         }
       }
     },
+    "/orders/{order_id}/recommendations": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Get Order Recommendations",
+        "description": "Get all predictions / recommendations for a specific order",
+        "operationId": "get_order_recommendations_orders__order_id__recommendations_get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/vehicle-types/": {
       "get": {
         "tags": [
@@ -493,6 +534,26 @@
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predictions/run": {
+      "post": {
+        "tags": [
+          "predictions"
+        ],
+        "summary": "Run Predictions",
+        "description": "Trigger a prediction run for open orders. The backend container must have the trained model available at /models/catboost_model.json",
+        "operationId": "run_predictions_predictions_run_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
@@ -942,6 +1003,16 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated At"
+          },
+          "last_prediction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrderPredictionResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -1206,6 +1277,63 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "OrderPredictionResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "order_id": {
+            "type": "integer",
+            "title": "Order Id"
+          },
+          "predicted_delay_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Predicted Delay Days"
+          },
+          "recommended_vehicle_type_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended Vehicle Type Id"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_id",
+          "created_at"
+        ],
+        "title": "OrderPredictionResponse"
       },
       "ValidationError": {
         "properties": {

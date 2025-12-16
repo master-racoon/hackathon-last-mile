@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import date, datetime
 from .vehicle_type import VehicleTypeResponse
+from .order_prediction import OrderPredictionResponse
 
 
 class CustomerOrderCreate(BaseModel):
@@ -68,5 +69,6 @@ class CustomerOrderResponse(BaseModel):
     status: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    last_prediction: Optional[OrderPredictionResponse] = None
 
     model_config = ConfigDict(from_attributes=True)
