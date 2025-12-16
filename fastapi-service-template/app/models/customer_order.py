@@ -38,6 +38,9 @@ class CustomerOrder(Base):
     vehicle_type_id = Column(Integer, ForeignKey("vehicle_types.id"), nullable=True)
     vehicle_type = relationship("VehicleType", back_populates="customer_orders")
     
+    # Predictions relationship - one order can have many predictions (different vehicle/track combinations)
+    predictions = relationship("OrderPrediction", back_populates="order")
+    
     # Calculated/predicted fields
     lead_time_days = Column(Integer, nullable=True, comment="Expected lead time in days")
     load_date = Column(Date, nullable=True, comment="Date when cargo is loaded")

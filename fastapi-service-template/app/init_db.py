@@ -5,6 +5,7 @@ Run this to populate initial vehicle types and customer orders from Excel
 from models import SessionLocal, Base, engine
 from models.vehicle_type import VehicleType
 from models.customer_order import CustomerOrder
+from models.destination_track import DestinationTrack
 import pandas as pd
 from datetime import datetime, date
 import logging
@@ -208,6 +209,63 @@ def seed_orders_from_excel(db, excel_path="/data/open_orders.xlsx"):
         db.rollback()
 
 
+def seed_destination_tracks(db):
+    """Seed destination tracks - aggregate by route (origin/destination pairs)"""
+    existing_count = db.query(DestinationTrack).count()
+    if existing_count > 0:
+        logger.info(f"Destination tracks already exist ({existing_count} records). Skipping.")
+        return
+    
+    csv_path = "/data/south_africa_all_with_weather_clean.csv"
+    if not Path(csv_path).exists():
+        logger.warning(f"Destination tracks CSV not found at {csv_path}. Skipping.")
+        return
+    
+    try:
+        df = pd.read_csv(csv_path)
+        logger.info(f"Loaded {len(df)} shipment records from CSV")
+        
+        # Aggregate by route: group by origin and destination cities
+        # Calculate average distance and temperatures for each unique route
+        route_cols = ['origin_country', 'origin_city', 'destination_country', 'destination_city']
+        agg_cols = {
+            'distance_km': 'mean',
+            'origin_temp_mean': 'mean',
+            'dest_temp_mean': 'mean'
+        }
+        
+        # Group by route and calculate aggregates
+        routes_df = df.groupby(route_cols, dropna=False).agg(agg_cols).reset_index()
+        
+        # Filter out routes where origin or destination city is missing (these are required fields)
+        routes_df = routes_df.dropna(subset=['origin_city', 'destination_city'])
+        
+        logger.info(f"Found {len(routes_df)} unique routes after aggregation")
+        
+        tracks_created = 0
+        for _, row in routes_df.iterrows():
+            track = DestinationTrack(
+                origin_country=str(row['origin_country']) if pd.notna(row['origin_country']) else 'Unknown',
+                origin_city=str(row['origin_city']),
+                destination_country=str(row['destination_country']) if pd.notna(row['destination_country']) else 'Unknown',
+                destination_city=str(row['destination_city']),
+                distance_km=float(row['distance_km']) if pd.notna(row['distance_km']) else None,
+                origin_temp_mean=float(row['origin_temp_mean']) if pd.notna(row['origin_temp_mean']) else None,
+                dest_temp_mean=float(row['dest_temp_mean']) if pd.notna(row['dest_temp_mean']) else None,
+            )
+            db.add(track)
+            tracks_created += 1
+        
+        db.commit()
+        logger.info(f"Successfully seeded {tracks_created} unique destination tracks (aggregated routes)")
+        
+    except Exception as e:
+        logger.error(f"Error loading destination tracks: {e}")
+        import traceback
+        traceback.print_exc()
+        db.rollback()
+
+
 def init_db():
     """Initialize database with seed data"""
     
@@ -222,6 +280,7 @@ def init_db():
     
     try:
         seed_vehicle_types(db)
+        seed_destination_tracks(db)
         seed_orders_from_excel(db)
         
     except Exception as e:

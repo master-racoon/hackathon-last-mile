@@ -12,7 +12,6 @@ from routers.example import router as example_router
 from routers.orders import router as orders_router
 from routers.vehicle_types import router as vehicle_types_router
 from routers.predictions import router as predictions_router
-from routers.vehicle_emissions import router as vehicle_emissions_router
 
 app = FastAPI(
     title="LastMile API",
@@ -35,7 +34,6 @@ app.include_router(example_router)
 app.include_router(orders_router)
 app.include_router(vehicle_types_router)
 app.include_router(predictions_router)
-app.include_router(vehicle_emissions_router)
 
 
 def log_info(req_body, res_body):

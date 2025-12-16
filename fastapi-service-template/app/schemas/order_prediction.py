@@ -8,6 +8,7 @@ class OrderPredictionResponse(BaseModel):
     order_id: int
     predicted_delay_days: Optional[float] = None
     recommended_vehicle_type_id: Optional[int] = None
+    destination_track_id: Optional[int] = None
     confidence: Optional[float] = None
     created_at: datetime
 
@@ -18,4 +19,5 @@ class OrderPredictionCreate(BaseModel):
     order_id: int
     predicted_delay_days: Optional[float] = None
     recommended_vehicle_type_id: Optional[int] = None
+    destination_track_id: Optional[int] = None
     confidence: Optional[float] = None
