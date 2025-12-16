@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   createOrderOrdersPost,
-  getAllVehicleTypesVehicleTypesGet,
 } from "@/generated-api";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,19 +27,20 @@ export function CreateOrderForm() {
   const [formData, setFormData] = useState({
     order_number: "",
     customer_name: "",
-    customer_reference: "",
     requested_delivery_date: "",
-    confirmation_number: "",
     vehicle_type_id: "",
     lead_time_days: "",
     load_date: "",
     estimated_arrival: "",
-    origin_city: "",
+    origin_state: "",
     origin_country: "",
-    destination_city: "",
+    destination_state: "",
     destination_country: "",
-    weight_kg: "",
-    volume_m3: "",
+    gross_weight_kg: "",
+    net_weight_kg: "",
+    total_width: "",
+    line_item_count: "",
+    delivery_method: "",
     notes: "",
     status: "pending",
   });
@@ -60,9 +60,7 @@ export function CreateOrderForm() {
     const payload: any = {
       order_number: formData.order_number,
       customer_name: formData.customer_name || null,
-      customer_reference: formData.customer_reference || null,
       requested_delivery_date: formData.requested_delivery_date,
-      confirmation_number: formData.confirmation_number || null,
       vehicle_type_id: formData.vehicle_type_id
         ? parseInt(formData.vehicle_type_id)
         : null,
@@ -71,12 +69,25 @@ export function CreateOrderForm() {
         : null,
       load_date: formData.load_date || null,
       estimated_arrival: formData.estimated_arrival || null,
-      origin_city: formData.origin_city || null,
+      origin_state: formData.origin_state || null,
       origin_country: formData.origin_country || null,
-      destination_city: formData.destination_city || null,
+      destination_state: formData.destination_state || null,
       destination_country: formData.destination_country || null,
-      weight_kg: formData.weight_kg ? parseFloat(formData.weight_kg) : null,
-      volume_m3: formData.volume_m3 ? parseFloat(formData.volume_m3) : null,
+      gross_weight_kg: formData.gross_weight_kg
+        ? parseFloat(formData.gross_weight_kg)
+        : null,
+      net_weight_kg: formData.net_weight_kg
+        ? parseFloat(formData.net_weight_kg)
+        : null,
+      total_width: formData.total_width
+        ? parseFloat(formData.total_width)
+        : null,
+      line_item_count: formData.line_item_count
+        ? parseInt(formData.line_item_count)
+        : null,
+      delivery_method: formData.delivery_method
+        ? parseInt(formData.delivery_method)
+        : null,
       notes: formData.notes || null,
       status: formData.status,
     };
@@ -141,24 +152,26 @@ export function CreateOrderForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="customer_reference">Customer Reference</Label>
+                <Label htmlFor="line_item_count">Line Item Count</Label>
                 <Input
-                  id="customer_reference"
-                  name="customer_reference"
-                  value={formData.customer_reference}
+                  id="line_item_count"
+                  name="line_item_count"
+                  type="number"
+                  value={formData.line_item_count}
                   onChange={handleChange}
-                  placeholder="REF-123"
+                  placeholder="1"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmation_number">Confirmation Number</Label>
+                <Label htmlFor="delivery_method">Delivery Method</Label>
                 <Input
-                  id="confirmation_number"
-                  name="confirmation_number"
-                  value={formData.confirmation_number}
+                  id="delivery_method"
+                  name="delivery_method"
+                  type="number"
+                  value={formData.delivery_method}
                   onChange={handleChange}
-                  placeholder="CONF-456"
+                  placeholder="1"
                 />
               </div>
             </div>
@@ -214,9 +227,9 @@ export function CreateOrderForm() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">Select vehicle type</option>
-                  {vehicleTypes?.data?.map((vt) => (
+                  {vehicleTypes?.data?.map((vt: any) => (
                     <option key={vt.id} value={vt.id}>
-                      {vt.name} ({vt.code})
+                      {vt.name}
                     </option>
                   ))}
                 </select>
@@ -238,13 +251,13 @@ export function CreateOrderForm() {
             {/* Origin and Destination */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="origin_city">Origin City</Label>
+                <Label htmlFor="origin_state">Origin State/City</Label>
                 <Input
-                  id="origin_city"
-                  name="origin_city"
-                  value={formData.origin_city}
+                  id="origin_state"
+                  name="origin_state"
+                  value={formData.origin_state}
                   onChange={handleChange}
-                  placeholder="Cape Town"
+                  placeholder="Western Cape"
                 />
               </div>
 
@@ -262,13 +275,15 @@ export function CreateOrderForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="destination_city">Destination City</Label>
+                <Label htmlFor="destination_state">
+                  Destination State/City
+                </Label>
                 <Input
-                  id="destination_city"
-                  name="destination_city"
-                  value={formData.destination_city}
+                  id="destination_state"
+                  name="destination_state"
+                  value={formData.destination_state}
                   onChange={handleChange}
-                  placeholder="Johannesburg"
+                  placeholder="Gauteng"
                 />
               </div>
 
@@ -285,30 +300,43 @@ export function CreateOrderForm() {
             </div>
 
             {/* Cargo Details */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="weight_kg">Weight (kg)</Label>
+                <Label htmlFor="gross_weight_kg">Gross Weight (kg)</Label>
                 <Input
-                  id="weight_kg"
-                  name="weight_kg"
+                  id="gross_weight_kg"
+                  name="gross_weight_kg"
                   type="number"
                   step="0.01"
-                  value={formData.weight_kg}
+                  value={formData.gross_weight_kg}
                   onChange={handleChange}
                   placeholder="1000.50"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="volume_m3">Volume (m³)</Label>
+                <Label htmlFor="net_weight_kg">Net Weight (kg)</Label>
                 <Input
-                  id="volume_m3"
-                  name="volume_m3"
+                  id="net_weight_kg"
+                  name="net_weight_kg"
                   type="number"
                   step="0.01"
-                  value={formData.volume_m3}
+                  value={formData.net_weight_kg}
                   onChange={handleChange}
-                  placeholder="25.00"
+                  placeholder="950.00"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="total_width">Total Width</Label>
+                <Input
+                  id="total_width"
+                  name="total_width"
+                  type="number"
+                  step="0.01"
+                  value={formData.total_width}
+                  onChange={handleChange}
+                  placeholder="2.4"
                 />
               </div>
             </div>

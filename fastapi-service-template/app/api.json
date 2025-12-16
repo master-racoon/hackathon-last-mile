@@ -397,25 +397,189 @@
         }
       }
     },
-    "/vehicle-types/": {
-      "get": {
+    "/orders/{order_id}/confirm": {
+      "post": {
         "tags": [
-          "vehicle-types"
+          "orders"
         ],
-        "summary": "Get All Vehicle Types",
-        "description": "Get all vehicle types",
-        "operationId": "get_all_vehicle_types_vehicle_types__get",
+        "summary": "Confirm Order",
+        "description": "Confirm a customer order by assigning a vehicle type.\nThis updates the order status to 'confirmed' and assigns the specified vehicle.\n\n- **order_id**: The ID of the order to confirm\n- **vehicle_type_id**: The ID of the vehicle type to assign",
+        "operationId": "confirm_order_orders__order_id__confirm_post",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          },
+          {
+            "name": "vehicle_type_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vehicle Type Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/components/schemas/CustomerOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/by-vehicle-type/{vehicle_type_id}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Get Orders By Vehicle Type",
+        "description": "Get all orders assigned to a specific vehicle type\n\n- **vehicle_type_id**: The ID of the vehicle type\n- **skip**: Number of records to skip (for pagination)\n- **limit**: Maximum number of records to return",
+        "operationId": "get_orders_by_vehicle_type_orders_by_vehicle_type__vehicle_type_id__get",
+        "parameters": [
+          {
+            "name": "vehicle_type_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vehicle Type Id"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CustomerOrderResponse"
+                  },
+                  "title": "Response Get Orders By Vehicle Type Orders By Vehicle Type  Vehicle Type Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-types/": {
+      "get": {
+        "tags": [
+          "vehicle-types"
+        ],
+        "summary": "Get Vehicle Types",
+        "description": "Get all vehicle types.\n\n- **skip**: Number of records to skip (pagination)\n- **limit**: Maximum number of records to return\n- **active_only**: If true, only return active vehicle types",
+        "operationId": "get_vehicle_types_vehicle_types__get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Active Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/VehicleTypeResponse"
                   },
-                  "type": "array",
-                  "title": "Response Get All Vehicle Types Vehicle Types  Get"
+                  "title": "Response Get Vehicle Types Vehicle Types  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -430,14 +594,14 @@
         "description": "Create a new vehicle type",
         "operationId": "create_vehicle_type_vehicle_types__post",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/VehicleTypeCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -505,6 +669,57 @@
           }
         }
       },
+      "put": {
+        "tags": [
+          "vehicle-types"
+        ],
+        "summary": "Update Vehicle Type",
+        "description": "Update an existing vehicle type",
+        "operationId": "update_vehicle_type_vehicle_types__vehicle_type_id__put",
+        "parameters": [
+          {
+            "name": "vehicle_type_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vehicle Type Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleTypeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleTypeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "vehicle-types"
@@ -533,6 +748,131 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-types/by-name/{name}": {
+      "get": {
+        "tags": [
+          "vehicle-types"
+        ],
+        "summary": "Get Vehicle Type By Name",
+        "description": "Get a specific vehicle type by name",
+        "operationId": "get_vehicle_type_by_name_vehicle_types_by_name__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleTypeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-types/recommend/for-order": {
+      "get": {
+        "tags": [
+          "vehicle-types"
+        ],
+        "summary": "Recommend Vehicles",
+        "description": "Recommend suitable vehicle types for an order.\n\n- **weight_kg**: Required weight capacity in kilograms\n- **volume_m3**: Optional volume capacity in cubic meters",
+        "operationId": "recommend_vehicles_vehicle_types_recommend_for_order_get",
+        "parameters": [
+          {
+            "name": "weight_kg",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "title": "Weight Kg"
+            }
+          },
+          {
+            "name": "volume_m3",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "title": "Volume M3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleTypeResponse"
+                  },
+                  "title": "Response Recommend Vehicles Vehicle Types Recommend For Order Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicle-types/initialize": {
+      "post": {
+        "tags": [
+          "vehicle-types"
+        ],
+        "summary": "Initialize Default Vehicle Types",
+        "description": "Initialize default vehicle types based on the dataset.\nThis is a one-time setup operation.",
+        "operationId": "initialize_default_vehicle_types_vehicle_types_initialize_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleTypeResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Initialize Default Vehicle Types Vehicle Types Initialize Post"
                 }
               }
             }
@@ -631,23 +971,23 @@
             ],
             "title": "Customer Name"
           },
-          "customer_reference": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Customer Reference"
-          },
           "requested_delivery_date": {
             "type": "string",
             "format": "date",
             "title": "Requested Delivery Date"
           },
-          "confirmation_number": {
+          "line_item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Item Count"
+          },
+          "origin_country": {
             "anyOf": [
               {
                 "type": "string"
@@ -656,7 +996,84 @@
                 "type": "null"
               }
             ],
-            "title": "Confirmation Number"
+            "title": "Origin Country"
+          },
+          "origin_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin State"
+          },
+          "destination_country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Country"
+          },
+          "destination_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination State"
+          },
+          "gross_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Weight Kg"
+          },
+          "net_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Weight Kg"
+          },
+          "total_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Width"
+          },
+          "delivery_method": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Method"
           },
           "vehicle_type_id": {
             "anyOf": [
@@ -704,72 +1121,6 @@
             ],
             "title": "Estimated Arrival"
           },
-          "origin_city": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Origin City"
-          },
-          "origin_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Origin Country"
-          },
-          "destination_city": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination City"
-          },
-          "destination_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination Country"
-          },
-          "weight_kg": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Weight Kg"
-          },
-          "volume_m3": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Volume M3"
-          },
           "notes": {
             "anyOf": [
               {
@@ -800,7 +1151,7 @@
           "requested_delivery_date"
         ],
         "title": "CustomerOrderCreate",
-        "description": "Schema for creating a new customer order"
+        "description": "Schema for creating a new customer order - aligned with Excel structure"
       },
       "CustomerOrderResponse": {
         "properties": {
@@ -823,23 +1174,23 @@
             ],
             "title": "Customer Name"
           },
-          "customer_reference": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Customer Reference"
-          },
           "requested_delivery_date": {
             "type": "string",
             "format": "date",
             "title": "Requested Delivery Date"
           },
-          "confirmation_number": {
+          "line_item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Item Count"
+          },
+          "origin_country": {
             "anyOf": [
               {
                 "type": "string"
@@ -848,7 +1199,84 @@
                 "type": "null"
               }
             ],
-            "title": "Confirmation Number"
+            "title": "Origin Country"
+          },
+          "origin_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin State"
+          },
+          "destination_country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Country"
+          },
+          "destination_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination State"
+          },
+          "gross_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Weight Kg"
+          },
+          "net_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Weight Kg"
+          },
+          "total_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Width"
+          },
+          "delivery_method": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Method"
           },
           "vehicle_type_id": {
             "anyOf": [
@@ -905,72 +1333,6 @@
               }
             ],
             "title": "Estimated Arrival"
-          },
-          "origin_city": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Origin City"
-          },
-          "origin_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Origin Country"
-          },
-          "destination_city": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination City"
-          },
-          "destination_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination Country"
-          },
-          "weight_kg": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Weight Kg"
-          },
-          "volume_m3": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Volume M3"
           },
           "notes": {
             "anyOf": [
@@ -1039,17 +1401,6 @@
             ],
             "title": "Customer Name"
           },
-          "customer_reference": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Customer Reference"
-          },
           "requested_delivery_date": {
             "anyOf": [
               {
@@ -1062,7 +1413,18 @@
             ],
             "title": "Requested Delivery Date"
           },
-          "confirmation_number": {
+          "line_item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line Item Count"
+          },
+          "origin_country": {
             "anyOf": [
               {
                 "type": "string"
@@ -1071,7 +1433,84 @@
                 "type": "null"
               }
             ],
-            "title": "Confirmation Number"
+            "title": "Origin Country"
+          },
+          "origin_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin State"
+          },
+          "destination_country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Country"
+          },
+          "destination_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination State"
+          },
+          "gross_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Weight Kg"
+          },
+          "net_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Weight Kg"
+          },
+          "total_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Width"
+          },
+          "delivery_method": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery Method"
           },
           "vehicle_type_id": {
             "anyOf": [
@@ -1118,72 +1557,6 @@
               }
             ],
             "title": "Estimated Arrival"
-          },
-          "origin_city": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Origin City"
-          },
-          "origin_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Origin Country"
-          },
-          "destination_city": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination City"
-          },
-          "destination_country": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Destination Country"
-          },
-          "weight_kg": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Weight Kg"
-          },
-          "volume_m3": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Volume M3"
           },
           "notes": {
             "anyOf": [
@@ -1374,9 +1747,251 @@
             "type": "string",
             "title": "Name"
           },
-          "code": {
-            "type": "string",
-            "title": "Code"
+          "max_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Weight Kg"
+          },
+          "payload_ton": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload Ton"
+          },
+          "max_volume_m3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Volume M3"
+          },
+          "volume_m3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume M3"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "height_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height M"
+          },
+          "diesel": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel",
+            "default": false
+          },
+          "hybrid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hybrid",
+            "default": false
+          },
+          "ev_van": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Van",
+            "default": false
+          },
+          "ev_charge_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Charge Time"
+          },
+          "ev_range_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Range Km"
+          },
+          "ev_energy_kwh_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Energy Kwh Per Km"
+          },
+          "average_speed_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Speed Kmh"
+          },
+          "fuel_consumption_per_100km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Consumption Per 100Km"
+          },
+          "diesel_l_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel L Per Km"
+          },
+          "cost_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Per Km"
+          },
+          "diesel_cost_zar_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel Cost Zar Per Km"
+          },
+          "ev_cost_zar_per_km_ac": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Cost Zar Per Km Ac"
+          },
+          "ev_cost_zar_per_km_dc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Cost Zar Per Km Dc"
+          },
+          "daily_rental_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Rental Cost"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active",
+            "default": true
           },
           "description": {
             "anyOf": [
@@ -1388,34 +2003,11 @@
               }
             ],
             "title": "Description"
-          },
-          "capacity_kg": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Capacity Kg"
-          },
-          "capacity_m3": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Capacity M3"
           }
         },
         "type": "object",
         "required": [
-          "name",
-          "code"
+          "name"
         ],
         "title": "VehicleTypeCreate",
         "description": "Schema for creating a new vehicle type"
@@ -1430,9 +2022,243 @@
             "type": "string",
             "title": "Name"
           },
-          "code": {
-            "type": "string",
-            "title": "Code"
+          "max_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Weight Kg"
+          },
+          "payload_ton": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload Ton"
+          },
+          "max_volume_m3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Volume M3"
+          },
+          "volume_m3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume M3"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "height_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height M"
+          },
+          "diesel": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel",
+            "default": false
+          },
+          "hybrid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hybrid",
+            "default": false
+          },
+          "ev_van": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Van",
+            "default": false
+          },
+          "ev_charge_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Charge Time"
+          },
+          "ev_range_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Range Km"
+          },
+          "ev_energy_kwh_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Energy Kwh Per Km"
+          },
+          "average_speed_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Speed Kmh"
+          },
+          "fuel_consumption_per_100km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Consumption Per 100Km"
+          },
+          "diesel_l_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel L Per Km"
+          },
+          "cost_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Per Km"
+          },
+          "diesel_cost_zar_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel Cost Zar Per Km"
+          },
+          "ev_cost_zar_per_km_ac": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Cost Zar Per Km Ac"
+          },
+          "ev_cost_zar_per_km_dc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Cost Zar Per Km Dc"
+          },
+          "daily_rental_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Rental Cost"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
           },
           "description": {
             "anyOf": [
@@ -1444,38 +2270,287 @@
               }
             ],
             "title": "Description"
-          },
-          "capacity_kg": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Capacity Kg"
-          },
-          "capacity_m3": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Capacity M3"
           }
         },
         "type": "object",
         "required": [
           "id",
           "name",
-          "code"
+          "is_active"
         ],
         "title": "VehicleTypeResponse",
         "description": "Schema for vehicle type response"
+      },
+      "VehicleTypeUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "max_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Weight Kg"
+          },
+          "payload_ton": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload Ton"
+          },
+          "max_volume_m3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Volume M3"
+          },
+          "volume_m3": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume M3"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "width_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width M"
+          },
+          "height_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height M"
+          },
+          "diesel": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel"
+          },
+          "hybrid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hybrid"
+          },
+          "ev_van": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Van"
+          },
+          "ev_charge_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Charge Time"
+          },
+          "ev_range_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Range Km"
+          },
+          "ev_energy_kwh_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Energy Kwh Per Km"
+          },
+          "average_speed_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Speed Kmh"
+          },
+          "fuel_consumption_per_100km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fuel Consumption Per 100Km"
+          },
+          "diesel_l_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel L Per Km"
+          },
+          "cost_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Per Km"
+          },
+          "diesel_cost_zar_per_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diesel Cost Zar Per Km"
+          },
+          "ev_cost_zar_per_km_ac": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Cost Zar Per Km Ac"
+          },
+          "ev_cost_zar_per_km_dc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ev Cost Zar Per Km Dc"
+          },
+          "daily_rental_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Rental Cost"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "title": "VehicleTypeUpdate",
+        "description": "Schema for updating an existing vehicle type"
       }
     }
   }

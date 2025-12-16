@@ -121,3 +121,74 @@ async def delete_order(order_id: int, db: Session = Depends(get_db)):
     repo = CustomerOrderRepository(db)
     if not repo.delete(order_id):
         raise HTTPException(status_code=404, detail="Order not found")
+
+
+@router.post("/{order_id}/confirm", response_model=CustomerOrderResponse)
+async def confirm_order(
+    order_id: int,
+    vehicle_type_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Confirm a customer order by assigning a vehicle type.
+    This updates the order status to 'confirmed' and assigns the specified vehicle.
+    
+    - **order_id**: The ID of the order to confirm
+    - **vehicle_type_id**: The ID of the vehicle type to assign
+    """
+    from repositories.vehicle_type_repository import VehicleTypeRepository
+    
+    # Verify vehicle type exists
+    vehicle_repo = VehicleTypeRepository(db)
+    vehicle_type = vehicle_repo.get_by_id(vehicle_type_id)
+    if not vehicle_type:
+        raise HTTPException(status_code=404, detail="Vehicle type not found")
+    
+    # Confirm the order
+    repo = CustomerOrderRepository(db)
+    confirmed_order = repo.confirm_order_with_vehicle(order_id, vehicle_type_id)
+    if not confirmed_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Attach latest prediction
+    pred_repo = OrderPredictionRepository(db)
+    setattr(confirmed_order, "last_prediction", pred_repo.get_latest_for_order(confirmed_order.id))
+    
+    return confirmed_order
+
+
+@router.get("/by-vehicle-type/{vehicle_type_id}", response_model=List[CustomerOrderResponse])
+async def get_orders_by_vehicle_type(
+    vehicle_type_id: int,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    db: Session = Depends(get_db)
+):
+    """
+    Get all orders assigned to a specific vehicle type
+    
+    - **vehicle_type_id**: The ID of the vehicle type
+    - **skip**: Number of records to skip (for pagination)
+    - **limit**: Maximum number of records to return
+    """
+    from repositories.vehicle_type_repository import VehicleTypeRepository
+    
+    # Verify vehicle type exists
+    vehicle_repo = VehicleTypeRepository(db)
+    vehicle_type = vehicle_repo.get_by_id(vehicle_type_id)
+    if not vehicle_type:
+        raise HTTPException(status_code=404, detail="Vehicle type not found")
+    
+    repo = CustomerOrderRepository(db)
+    orders = repo.get_by_vehicle_type(vehicle_type_id, skip, limit)
+    
+    # Attach latest prediction to each order
+    pred_repo = OrderPredictionRepository(db)
+    for o in orders:
+        try:
+            latest = pred_repo.get_latest_for_order(o.id)
+            setattr(o, "last_prediction", latest)
+        except Exception:
+            setattr(o, "last_prediction", None)
+    
+    return orders

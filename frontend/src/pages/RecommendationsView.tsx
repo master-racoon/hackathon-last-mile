@@ -111,7 +111,7 @@ export function RecommendationsView() {
               Origin
             </div>
             <div className="text-lg">
-              {orderData.origin_city || "N/A"},{" "}
+              {orderData.origin_state || "N/A"},{" "}
               {orderData.origin_country || "N/A"}
             </div>
           </div>
@@ -120,24 +120,28 @@ export function RecommendationsView() {
               Destination
             </div>
             <div className="text-lg">
-              {orderData.destination_city || "N/A"},{" "}
+              {orderData.destination_state || "N/A"},{" "}
               {orderData.destination_country || "N/A"}
             </div>
           </div>
           <div>
             <div className="text-sm font-medium text-muted-foreground">
-              Weight
+              Gross Weight
             </div>
             <div className="text-lg">
-              {orderData.weight_kg ? `${orderData.weight_kg} kg` : "N/A"}
+              {orderData.gross_weight_kg
+                ? `${orderData.gross_weight_kg} kg`
+                : "N/A"}
             </div>
           </div>
           <div>
             <div className="text-sm font-medium text-muted-foreground">
-              Volume
+              Net Weight
             </div>
             <div className="text-lg">
-              {orderData.volume_m3 ? `${orderData.volume_m3} m³` : "N/A"}
+              {orderData.net_weight_kg
+                ? `${orderData.net_weight_kg} kg`
+                : "N/A"}
             </div>
           </div>
         </CardContent>

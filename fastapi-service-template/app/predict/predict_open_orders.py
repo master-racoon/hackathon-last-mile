@@ -49,11 +49,12 @@ def load_model(path: Path):
 def build_row_from_order(order: CustomerOrder):
     """Construct a dict of features for a given order. If some features aren't available, leave as NaN/None."""
     row = {}
-    # Map available fields
+    # Map available fields - updated to match new model field names
     row['origin_country'] = getattr(order, 'origin_country', None)
-    row['origin_city'] = getattr(order, 'origin_city', None)
+    row['origin_city'] = getattr(order, 'origin_state', None)  # Using origin_state as city proxy
     row['destination_country'] = getattr(order, 'destination_country', None)
-    row['destination_city'] = getattr(order, 'destination_city', None)
+    row['destination_city'] = getattr(order, 'destination_state', None)  # Using destination_state as city proxy
+    
     # ship_dow from load_date if present
     try:
         if order.load_date:
@@ -72,10 +73,10 @@ def build_row_from_order(order: CustomerOrder):
         row['ship_month'] = None
         row['ship_week'] = None
 
-    # Other numeric-like fields
+    # Other numeric-like fields - updated field names
     row['leadtime_expected_days'] = getattr(order, 'lead_time_days', None)
-    row['weight'] = getattr(order, 'weight_kg', None)
-    row['volume'] = getattr(order, 'volume_m3', None)
+    row['weight'] = getattr(order, 'gross_weight_kg', None)  # Using gross_weight_kg instead of weight_kg
+    row['volume'] = None  # volume_m3 not available in new schema
 
     # placeholders for features not available on order
     for c in FEATURE_COLS:
@@ -92,14 +93,14 @@ def recommend_vehicle_type(db, weight, volume):
     # Filter out types with no capacity info (keep them but deprioritize)
     fit = []
     for v in candidates:
-        fits_weight = (v.capacity_kg is None) or (weight is None) or (v.capacity_kg >= weight)
-        fits_volume = (v.capacity_m3 is None) or (volume is None) or (v.capacity_m3 >= volume)
+        fits_weight = (v.max_weight_kg is None) or (weight is None) or (v.max_weight_kg >= weight)
+        fits_volume = (v.max_volume_m3 is None) or (volume is None) or (v.max_volume_m3 >= volume)
         if fits_weight and fits_volume:
             fit.append(v)
     if not fit:
         return None
     # choose the one with smallest capacity that still fits (by weight then volume)
-    fit_sorted = sorted(fit, key=lambda x: ((x.capacity_kg or 1e12), (x.capacity_m3 or 1e12)))
+    fit_sorted = sorted(fit, key=lambda x: ((x.max_weight_kg or 1e12), (x.max_volume_m3 or 1e12)))
     return fit_sorted[0]
 
 
@@ -147,8 +148,8 @@ def predict_open_orders():
         for o, p in zip(order_map, preds):
             # basic confidence placeholder: not available from plain CatBoost JSON predict
             confidence = None
-            # recommend vehicle type
-            rec = recommend_vehicle_type(db, getattr(o, 'weight_kg', None), getattr(o, 'volume_m3', None))
+            # recommend vehicle type - using gross_weight_kg
+            rec = recommend_vehicle_type(db, getattr(o, 'gross_weight_kg', None), None)
             rec_id = rec.id if rec else None
 
             pred_repo.create(order_id=o.id, predicted_delay=float(p), recommended_vehicle_type_id=rec_id, confidence=confidence)
@@ -157,7 +158,6 @@ def predict_open_orders():
 
     finally:
         db.close()
-
 
 if __name__ == '__main__':
     predict_open_orders()

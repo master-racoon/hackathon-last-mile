@@ -60,3 +60,21 @@ class CustomerOrderRepository:
             logger.info(f"Deleted customer order ID: {order_id}")
             return True
         return False
+    
+    def get_by_vehicle_type(self, vehicle_type_id: int, skip: int = 0, limit: int = 100) -> List[CustomerOrder]:
+        """Get customer orders by vehicle type"""
+        return self.db.query(CustomerOrder).filter(
+            CustomerOrder.vehicle_type_id == vehicle_type_id
+        ).offset(skip).limit(limit).all()
+    
+    def confirm_order_with_vehicle(self, order_id: int, vehicle_type_id: int) -> Optional[CustomerOrder]:
+        """Confirm an order by assigning a vehicle type and updating status"""
+        db_order = self.get_by_id(order_id)
+        if db_order:
+            db_order.vehicle_type_id = vehicle_type_id
+            db_order.status = "confirmed"
+            self.db.commit()
+            self.db.refresh(db_order)
+            logger.info(f"Confirmed order ID {order_id} with vehicle type {vehicle_type_id}")
+            return db_order
+        return None
