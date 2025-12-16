@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   database:
     image: postgres:latest
@@ -43,6 +42,8 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./fastapi-service-template/app:/usr/src/app
+      - ./models:/models
+      - ./data:/data
     ports:
       - "8000:8000"
       - "5000:8000" # Also expose on port 5000 for compatibility

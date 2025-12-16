@@ -11,6 +11,7 @@ from models import Base, engine
 from routers.example import router as example_router
 from routers.orders import router as orders_router
 from routers.vehicle_types import router as vehicle_types_router
+from routers.predictions import router as predictions_router
 
 app = FastAPI(
     title="LastMile API",
@@ -32,6 +33,7 @@ logging.info("Database tables created successfully")
 app.include_router(example_router)
 app.include_router(orders_router)
 app.include_router(vehicle_types_router)
+app.include_router(predictions_router)
 
 
 def log_info(req_body, res_body):
