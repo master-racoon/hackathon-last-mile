@@ -136,8 +136,14 @@ def predict_open_orders():
             logger.warning("No matching features found between orders and model features. Predictions may be meaningless.")
             model_cols = df.columns.tolist()
 
-        # Fill missing numeric with 0 (CatBoost can handle NaNs, but being explicit helps)
-        df_for_pred = df[model_cols].fillna(np.nan)
+        df_for_pred = df[model_cols].copy()
+        
+        # Fill missing values: convert None to empty string for categorical, 0 for numeric
+        for col in df_for_pred.columns:
+            if col in CAT_FEATURES:
+                df_for_pred[col] = df_for_pred[col].fillna("")
+            else:
+                df_for_pred[col] = df_for_pred[col].fillna(0)
 
         cat_cols = [c for c in CAT_FEATURES if c in df_for_pred.columns]
         cat_indices = [df_for_pred.columns.get_loc(c) for c in cat_cols]
