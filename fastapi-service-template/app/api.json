@@ -1661,7 +1661,7 @@
             "type": "integer",
             "title": "Order Id"
           },
-          "predicted_delay_days": {
+          "expected_lead_time_days": {
             "anyOf": [
               {
                 "type": "number"
@@ -1670,7 +1670,18 @@
                 "type": "null"
               }
             ],
-            "title": "Predicted Delay Days"
+            "title": "Expected Lead Time Days"
+          },
+          "predicted_co2_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Predicted Co2 Kg"
           },
           "recommended_vehicle_type_id": {
             "anyOf": [
@@ -1704,6 +1715,18 @@
               }
             ],
             "title": "Confidence"
+          },
+          "recommended_booking_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended Booking Date"
           },
           "created_at": {
             "type": "string",

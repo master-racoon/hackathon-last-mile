@@ -1,10 +1,12 @@
 """
 Predict open orders using trained CatBoost model and save predictions to the database.
+This script calculates expected_lead_time (95% confidence upper bound) and recommended booking dates.
 Run this script inside the backend container (backend must have access to /models/catboost_model.json)
 """
 import os
 import logging
 from pathlib import Path
+from datetime import timedelta
 
 try:
     import pandas as pd
@@ -15,8 +17,10 @@ except Exception as e:
 
 from models import SessionLocal
 from models.customer_order import CustomerOrder
+from models.destination_track import DestinationTrack
 from repositories.prediction_repository import OrderPredictionRepository
 from repositories.vehicle_type_repository import VehicleTypeRepository
+from utils.emissions import calculate_co2_emissions
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -149,16 +153,53 @@ def predict_open_orders():
         cat_indices = [df_for_pred.columns.get_loc(c) for c in cat_cols]
 
         pool = Pool(df_for_pred, cat_features=cat_indices) if cat_indices else Pool(df_for_pred)
+        
+        # Get base predictions (mean prediction)
         preds = model.predict(pool)
+        
+        # Calculate 95% confidence upper bound for expected lead time
+        # For CatBoost, we can use virtual_ensembles to estimate uncertainty
+        # Alternatively, add a margin based on historical variance (simplified approach)
+        # Here we'll use a simplified approach: expected_lead_time = predicted_transit_days + 1.645 * std_estimate
+        # Assuming ~20% coefficient of variation as a rough estimate
+        std_estimates = preds * 0.20  # 20% of prediction as standard deviation
+        expected_lead_times = preds + 1.645 * std_estimates  # 95% one-sided confidence interval
 
-        for o, p in zip(order_map, preds):
+        for o, pred_transit, lead_time in zip(order_map, preds, expected_lead_times):
             # basic confidence placeholder: not available from plain CatBoost JSON predict
             confidence = None
+            
             # recommend vehicle type - using gross_weight_kg
-            rec = recommend_vehicle_type(db, getattr(o, 'gross_weight_kg', None), None)
-            rec_id = rec.id if rec else None
-
-            pred_repo.create(order_id=o.id, predicted_delay=float(p), recommended_vehicle_type_id=rec_id, confidence=confidence)
+            rec_vehicle = recommend_vehicle_type(db, getattr(o, 'gross_weight_kg', None), None)
+            rec_vehicle_id = rec_vehicle.id if rec_vehicle else None
+            
+            # Find matching destination track (if available)
+            destination_track = db.query(DestinationTrack).filter(
+                DestinationTrack.origin_city == o.origin_state,
+                DestinationTrack.destination_city == o.destination_state
+            ).first()
+            destination_track_id = destination_track.id if destination_track else None
+            
+            # Calculate CO2 emissions if we have vehicle, track, and weight
+            predicted_co2 = None
+            if rec_vehicle and destination_track and o.gross_weight_kg:
+                temp = destination_track.dest_temp_mean or 25  # Default to 25°C if not available
+                predicted_co2 = calculate_co2_emissions(
+                    distance_km=destination_track.distance_km or 0,
+                    weight_kg=o.gross_weight_kg,
+                    temp_c=temp,
+                    emission_factor_kg_per_km=rec_vehicle.emission_factor_kg_per_km or 0.5
+                )
+            
+            pred_repo.create(
+                order_id=o.id,
+                expected_lead_time=float(lead_time),
+                predicted_co2=predicted_co2,
+                recommended_vehicle_type_id=rec_vehicle_id,
+                destination_track_id=destination_track_id,
+                confidence=confidence,
+                requested_arrival_date=o.requested_delivery_date
+            )
 
         logger.info(f"Saved predictions for {len(order_map)} orders")
 
