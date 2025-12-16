@@ -1,7 +1,9 @@
-# Base image
-FROM python:3.10-bullseye as build
+# Multi-platform base image - automatically selects the right architecture
+FROM python:3.11-slim as build
 
-RUN apt-get update && apt-get install -y build-essential curl
+RUN apt-get update && apt-get install -y build-essential curl && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV VIRTUAL_ENV=/opt/venv \
     PATH="/opt/venv/bin:$PATH"
 
@@ -11,8 +13,8 @@ WORKDIR /usr/src
 RUN uv venv /opt/venv && \
     uv pip install --no-cache -r requirements.txt
 
-# App image
-FROM python:3.10-bullseye
+# App image - automatically selects the right architecture
+FROM python:3.11-slim
 COPY --from=build /opt/venv /opt/venv
 
 ENV PATH="/opt/venv/bin:$PATH"

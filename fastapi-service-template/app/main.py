@@ -4,12 +4,17 @@ import logging
 import json
 from pathlib import Path
 
+# Import database models and setup
+from models import Base, engine
+
 # Import your routers here
 from routers.example import router as example_router
+from routers.orders import router as orders_router
+from routers.vehicle_types import router as vehicle_types_router
 
 app = FastAPI(
-    title="FastAPI Service Template",
-    description="A template for creating FastAPI microservices",
+    title="LastMile API",
+    description="API for managing customer orders and vehicle types for shipping",
     version="1.0.0"
 )
 
@@ -19,8 +24,14 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+# Create database tables
+Base.metadata.create_all(bind=engine)
+logging.info("Database tables created successfully")
+
 # Include your routers here
 app.include_router(example_router)
+app.include_router(orders_router)
+app.include_router(vehicle_types_router)
 
 
 def log_info(req_body, res_body):
@@ -60,7 +71,11 @@ async def logging_middleware(request: Request, call_next):
 @app.get("/")
 async def root():
     """Health check endpoint"""
-    return {"status": "healthy", "service": "fastapi-service-template"}
+    return {
+        "status": "healthy",
+        "service": "lastmile-api",
+        "version": "1.0.0"
+    }
 
 
 @app.get("/health")

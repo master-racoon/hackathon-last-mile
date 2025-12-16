@@ -1,11 +1,11 @@
-# Base image
-ARG TARGETPLATFORM=linux/arm64/v8
-FROM --platform=$TARGETPLATFORM arm64v8/python:3.10-bullseye as build
+# Multi-platform base image - automatically selects the right architecture
+FROM python:3.11-slim as build
 
-RUN apt-get update && apt-get install -y build-essential curl
+RUN apt-get update && apt-get install -y build-essential curl && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV VIRTUAL_ENV=/opt/venv \
     PATH="/opt/venv/bin:$PATH"
-
 
 COPY --from=ghcr.io/astral-sh/uv:0.5.14 /uv /uvx /bin/
 COPY requirements.txt /usr/src/
@@ -13,9 +13,8 @@ WORKDIR /usr/src
 RUN uv venv /opt/venv && \
     uv pip install --no-cache -r requirements.txt
 
-# App image
-ARG TARGETPLATFORM=linux/arm64/v8
-FROM arm64v8/python:3.10-bullseye
+# App image - automatically selects the right architecture
+FROM python:3.11-slim
 COPY --from=build /opt/venv /opt/venv
 
 # Activate the virtualenv in the container
